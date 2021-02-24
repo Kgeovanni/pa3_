@@ -1,0 +1,207 @@
+---
+title: "index.Rmd"
+author: "Diana"
+date: "2/19/2021"
+output: html_document
+---
+
+
+### SETUP
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(languageR)
+library(tidyverse)
+library(knitr)
+```
+
+### EDA: Load Dataset
+```{r, languageR}
+english = english
+danish = danish
+beginningReaders = beginningReaders
+durationsGe = durationsGe
+lexdec = lexdec
+etymology = etymology
+```
+
+### EDA english data DELETE????????????????????
+```{r}
+
+beginningReaders %>%
+  ggplot(., aes(x = OrthLength, y = ProportionOfErrors)) +
+  geom_point() +
+  geom_smooth(method = lm)
+
+english %>%
+  ggplot(., aes(x = NounFrequency, y = RTnaming)) +
+  geom_point() +
+  geom_smooth(method = lm)
+
+english %>%
+  ggplot(., aes(x = NounFrequency, y = RTnaming)) +
+  geom_point() +
+  geom_smooth(method = lm)
+```
+
+### separate Word Column ???????????????DELETE??????
+```{r}
+durationsGe %>%
+  separate(col = Word, 
+           into = c(""))
+```
+
+### Add Age to main data w/
+```{r}
+durationsGe = durationsGe %>%
+mutate(Age = (2021 - YearOfBirth))
+
+```
+
+### TIDY DATA
+
+```{r}
+etymology <- etymology %>%
+  filter(., Valency < 15)
+```
+
+### EDA: Bivariate regression Graph 1
+```{r}
+
+durationsGe %>%
+  ggplot(., aes(x = YearOfBirth, y = DurationOfPrefix)) +
+    geom_point(position = position_jitter(1), size = .5) +
+    labs(x = "Year of Birth", y = "Duration of Prefix ", 
+         title = "Lexical Frequency and Acoustic Reduction in Spoken Dutch",
+         caption = "Data from Pluymaekers, Ernestus, & Baayen (2005)") +
+    theme_bw() +
+    theme(plot.title = element_text(hjust = 0.5)) +
+    geom_smooth(method = lm, 
+                se = FALSE,
+                fullrange = TRUE)
+
+
+cor.test(x = durationsGe$YearOfBirth, y = durationsGe$DurationOfPrefix)
+
+```
+### EDA: Bivariate regression Graph 2
+```{r}
+
+durationsGe %>%
+  ggplot(., aes(x = Frequency, y = DurationOfPrefix)) +
+    geom_point(position = position_jitter(2), size = .5) +
+    labs(x = "Frequency of Words", y = "Duration of Prefix ", 
+         title = "Lexical Frequency and Acoustic Reduction in Spoken Dutch",
+         caption = "Data from Pluymaekers, Ernestus, & Baayen (2005)") +
+    theme_bw() +
+    theme(plot.title = element_text(hjust = 0.5)) +
+    geom_smooth(method = lm, 
+                se = FALSE,
+                fullrange = TRUE)
+```
+
+```{r}
+
+```
+
+### EDA: Calculate descriptive statistics of your choice
+```{r}
+durationsGe %>%
+  summary()
+```
+```{r}
+durationsGe %>% 
+  group_by(Sex) %>% 
+  summarise(
+    MeanSpeechRate = mean(SpeechRate),
+    DurationOfPrefix = mean(DurationOfPrefix))
+
+```
+
+```{r}
+durationsGe %>% 
+  mutate(
+    Newdata = mean(SpeechRate),
+    DurationOfPrefix = mean(DurationOfPrefix))
+```
+
+
+##?????
+```{r}
+durationsGe %>% 
+  ggplot(aes(x =Age, y = SpeechRate, color = Age, shape = Word)) +
+  geom_point(position = position_jitter(2), size = .5) +
+  geom_smooth(method = lm) +
+  labs(x = "Age", y = "Log-transformed speech rate", 
+       title = "Speech Rate by Age", color = "Gender")
+```
+
+### EDA: Writing Assignment
+
+ 
+#####################################
+
+
+##option for scatter plots DELETE ????????????????
+
+```{r}
+durationsGe %>%
+  ggplot(., aes(x = NumberSegmentsOnset, y = SpeechRate)) +
+  geom_point(position = position_jitter(2), size = .5) +
+  geom_smooth(method = lm)
+
+durationsGe %>%
+  ggplot(., aes(x = NumberSegmentsOnset, y = DurationOfPrefix)) +
+  geom_point(position = position_jitter(2), size = .5) +
+  geom_smooth(method = lm)
+
+durationsGe %>%
+  ggplot(., aes(x = Age, y = SpeechRate, color = Sex)) +
+  geom_point(position = position_jitter(2), size = .5) +
+  geom_smooth(method = lm)
+```
+
+
+```{r}
+lexdec %>% 
+  ggplot(aes(x = Length, y = RT, color = PrevType)) +
+  geom_point(position = position_jitter(2), size = .5) +
+  geom_smooth(method = lm, se = TRUE)
+
+
+geom_smooth(method = lm, 
+                se = FALSE,
+                fullrange = TRUE)
+
+###no more than 7 code on RT data
+lexdec = lexdec %>% 
+    filter(., RT <7)
+
+```
+
+
+### NEW DATA 
+```{r}
+etymology %>%
+  ggplot(aes(x = Valency, y = WrittenFrequency, color = Regularity)) +
+  geom_point(position = position_jitter(2), size = 1.5) +
+  geom_smooth(method = lm) +
+  labs(x = "Valency", y = "Log-transformed written frequency", 
+       title = "Frequency of Dutch Verbs by Verbal Valency", 
+       color = "Morphological Regularity") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+  
+```
+##Tidy data for etymology
+```{r}
+etymology_descriptive <- etymology %>% 
+  group_by(Valency) %>% 
+  summarize(MeanWrittenFrequency = mean(WrittenFrequency), SDWrittenFrequency = sd(WrittenFrequency))
+
+kable(etymology_descriptive[1:3], caption = "**Table 1.** Mean and standard deviation of standardized written frequencies in CELEX corpus for Dutch verbs by valence.”)
+```
+

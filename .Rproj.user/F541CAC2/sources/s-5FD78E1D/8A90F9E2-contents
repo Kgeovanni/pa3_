@@ -1,0 +1,76 @@
+---
+output: html_document
+---
+
+
+```{r}
+## Classwork from Feb. 18, 2021
+library(tidyverse)
+library(tidyr)
+library(untidydata)
+library(ggplot2)
+pre_post = pre_post
+language_diversity = language_diversity
+
+
+
+
+### separate()  NEED TO REVIEW THIS NOT WORKING???
+
+pre_post %>%
+  separate_(data = .,
+            col = test,
+            into = c("group", "cond"))
+            sep = "_"
+
+
+
+# Second way to code separate()
+pre_post %>% 
+  separate(spec, c("group", "cond")), "_"
+
+           
+### unite()
+
+pre_post %>%
+  unite(., col = "silly", c("id", "spec"), sep = "_hi_") #does not w/ "_"
+
+
+### pivot_longer() IT WORKS!!!!
+
+pre_post %>%
+  pivot_longer(., 
+    cols = c("test1", "test2"),
+    names_to = "test", 
+    values_to = "score")
+
+
+#Scatter plot of this data IT WORKED!!!
+pre_post %>%
+  ggplot(., aes(x = test1, y = test2 )) +
+  geom_point() +
+  geom_smooth(method = lm)
+  
+  
+### pivot_wider
+# NEW DATA language_diversity
+
+language_diversity
+
+### pivot_wider  DID NOT WORK
+language_diversity %>%
+  pivot_wider(
+    names_from = "Measurement",
+    values_from = "Value"
+  ) %>%
+
+#Scatter plot of this data IT WORKED!!!
+  ggplot(., aes(x = log(Area), Langs )) +
+  geom_point() +
+  geom_smooth(method = "glm", method.args = list(family = "poisson")) 
+
+
+```
+
+
+
